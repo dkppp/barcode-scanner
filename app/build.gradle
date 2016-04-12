@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 23
@@ -8,6 +9,8 @@ android {
         minSdkVersion 15
     }
 }
+
+group='com.gitlab.vigroup'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
