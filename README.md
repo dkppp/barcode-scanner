@@ -5,7 +5,7 @@ dependencies {
 }
 ```
 
-[![Release](https://jitpack.io/v/User/Repo.svg)](https://jitpack.io/#dkppp/barcode-scanner)
+[![Release](https://jitpack.io/v/User/Repo.svg)](https://jitpack.io/dkppp/barcode-scanner)
 
 activity_card_scan.xml
 ```XML
