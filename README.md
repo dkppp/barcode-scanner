@@ -3,7 +3,7 @@
 dependencies {
     compile 'com.github.dkppp:barcode-scanner:1.0.1'
 }
-```Gradle
+```
 
 [![Release](https://jitpack.io/v/User/Repo.svg)](https://jitpack.io/#dkppp/barcode-scanner)
 
@@ -21,7 +21,7 @@ activity_card_scan.xml
     <!--put here childs, ZXingScannerView extends FrameLayout-->
     
 </ru.vigroup.barcodescanner.ZXingScannerView>    
-```XML
+```
 
 
 ```XML
@@ -30,7 +30,7 @@ activity_card_scan.xml
 <attr name="borderStrokeWidth" format="dimension|reference"/>
 <attr name="borderPadding" format="dimension|reference"/>
 <attr name="borderColor" format="color|reference"/>
-```XML
+```
 
 ```Java
 public class CardScanActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
@@ -83,4 +83,4 @@ public class CardScanActivity extends AppCompatActivity implements ZXingScannerV
         finish();
     }
 }
-```Java
+```
