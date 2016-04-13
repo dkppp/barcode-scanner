@@ -1,4 +1,4 @@
-# barcode-scanner
+# Example
 
 <?xml version="1.0" encoding="utf-8"?>
 <ru.vigroup.barcodescanner.ZXingScannerView
@@ -16,7 +16,6 @@
 <attr name="borderColor" format="color|reference"/>
 
 public class CardScanActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
-
     public static final String EXTRA_CARD = "card";
 
     @Bind(R.id.scanner)
