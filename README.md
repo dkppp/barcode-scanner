@@ -1,5 +1,14 @@
 # Example
+```Gradle
+dependencies {
+    compile 'com.github.dkppp:barcode-scanner:1.0.1'
+}
+```Gradle
 
+[![Release](https://jitpack.io/v/User/Repo.svg)](https://jitpack.io/#dkppp/barcode-scanner)
+
+activity_card_scan.xml
+```XML
 <?xml version="1.0" encoding="utf-8"?>
 <ru.vigroup.barcodescanner.ZXingScannerView
     android:id="@+id/scanner"
@@ -7,14 +16,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:borderColor="@color/colorPrimary"/>
+    app:borderColor="@color/colorPrimary">
+    
+    <!--put here childs, ZXingScannerView extends FrameLayout-->
+    
+</ru.vigroup.barcodescanner.ZXingScannerView>    
+```XML
 
+
+```XML
 <attr name="maskColor" format="color|reference"/>
 <attr name="borderLength" format="dimension|reference"/>
 <attr name="borderStrokeWidth" format="dimension|reference"/>
 <attr name="borderPadding" format="dimension|reference"/>
 <attr name="borderColor" format="color|reference"/>
+```XML
 
+```Java
 public class CardScanActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
     public static final String EXTRA_CARD = "card";
 
@@ -65,3 +83,4 @@ public class CardScanActivity extends AppCompatActivity implements ZXingScannerV
         finish();
     }
 }
+```Java
