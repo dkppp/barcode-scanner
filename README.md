@@ -1,11 +1,12 @@
 # Example
+
+[![Release](https://jitpack.io/v/jitpack/maven-simple.svg)](https://jitpack.io/#dkppp/barcode-scanner)
+
 ```Gradle
 dependencies {
     compile 'com.github.dkppp:barcode-scanner:1.0.1'
 }
 ```
-
-[![Release](https://jitpack.io/v/User/Repo.svg)](https://jitpack.io/dkppp/barcode-scanner)
 
 activity_card_scan.xml
 ```XML
