@@ -3,6 +3,7 @@ package ru.vigroup.barcodescanner;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
@@ -29,13 +30,51 @@ public class ViewFinderView extends View {
     private static final float PORTRAIT_HEIGHT_RATIO = 3f / 8;
     private static final int PORTRAIT_MAX_FRAME_WIDTH = (int) (1080 * PORTRAIT_WIDTH_RATIO); // = 7/8 * 1080
     private static final int PORTRAIT_MAX_FRAME_HEIGHT = (int) (1920 * PORTRAIT_HEIGHT_RATIO); // = 3/8 * 1920
+    private Paint mMaskPaint;
+    private Paint mBorderPaint;
+    private int mLineLength;
+    private int mPadding;
 
     public ViewFinderView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public ViewFinderView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        Resources resources = getResources();
+
+        int maskColor = resources.getColor(R.color.viewfinder_mask);
+        int borderColor = resources.getColor(R.color.viewfinder_border);
+        int borderWidth = resources.getDimensionPixelSize(R.dimen.viewfinder_border_width);
+
+        mLineLength = resources.getDimensionPixelSize(R.dimen.viewfinder_border_length);
+        mPadding = resources.getDimensionPixelSize(R.dimen.viewfinder_border_padding);
+
+        if (attrs != null) {
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BarcodeScannerView, 0, 0);
+
+            maskColor = a.getColor(R.styleable.BarcodeScannerView_maskColor, maskColor);
+            borderColor = a.getColor(R.styleable.BarcodeScannerView_borderColor, borderColor);
+            borderWidth = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_borderWidth, borderWidth);
+            mLineLength = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_borderLength, mLineLength);
+            mPadding = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_borderPadding, mPadding);
+
+            a.recycle();
+        }
+
+        mMaskPaint = new Paint();
+        mMaskPaint.setColor(maskColor);
+
+        mBorderPaint = new Paint();
+        mBorderPaint.setColor(borderColor);
+        mBorderPaint.setStyle(Paint.Style.STROKE);
+        mBorderPaint.setStrokeWidth(borderWidth);
+
+        mBorderPaint.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
+        mBorderPaint.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
+        mBorderPaint.setPathEffect(new CornerPathEffect(4));   // set the path effect when they join.
+        mBorderPaint.setAntiAlias(true);
     }
 
     public void setupViewFinder() {
@@ -66,54 +105,36 @@ public class ViewFinderView extends View {
     }
 
     public void drawViewFinderMask(Canvas canvas) {
-        Paint paint = new Paint();
-        Resources resources = getResources();
-        paint.setColor(resources.getColor(R.color. viewfinder_mask));
-
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
-        canvas.drawRect(0, 0, width, mFramingRect.top, paint);
-        canvas.drawRect(0, mFramingRect.top, mFramingRect.left, mFramingRect.bottom, paint);
-        canvas.drawRect(mFramingRect.right, mFramingRect.top, width, mFramingRect.bottom, paint);
-        canvas.drawRect(0, mFramingRect.bottom, width, height, paint);
+        canvas.drawRect(0, 0, width, mFramingRect.top, mMaskPaint);
+        canvas.drawRect(0, mFramingRect.top, mFramingRect.left, mFramingRect.bottom, mMaskPaint);
+        canvas.drawRect(mFramingRect.right, mFramingRect.top, width, mFramingRect.bottom, mMaskPaint);
+        canvas.drawRect(0, mFramingRect.bottom, width, height, mMaskPaint);
     }
 
     public void drawViewFinderBorder(Canvas canvas) {
-        Paint paint = new Paint();
-        Resources resources = getResources();
-        paint.setColor(resources.getColor(R.color.viewfinder_border));
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(resources.getDimensionPixelSize(R.dimen.viewfinder_border_width));
-
-        paint.setStrokeJoin(Paint.Join.ROUND);    // set the join to round you want
-        paint.setStrokeCap(Paint.Cap.ROUND);      // set the paint cap to round too
-        paint.setPathEffect(new CornerPathEffect(4));   // set the path effect when they join.
-        paint.setAntiAlias(true);
-
-        int lineLength = resources.getDimensionPixelSize(R.dimen.viewfinder_border_length);
-        int padding = resources.getDimensionPixelSize(R.dimen.viewfinder_border_padding);
-
         Path path = new Path();
-        path.moveTo(mFramingRect.left - padding, mFramingRect.top - padding + lineLength);
-        path.lineTo(mFramingRect.left - padding, mFramingRect.top - padding);
-        path.lineTo(mFramingRect.left - padding + lineLength, mFramingRect.top - padding);
-        canvas.drawPath(path, paint);
+        path.moveTo(mFramingRect.left - mPadding, mFramingRect.top - mPadding + mLineLength);
+        path.lineTo(mFramingRect.left - mPadding, mFramingRect.top - mPadding);
+        path.lineTo(mFramingRect.left - mPadding + mLineLength, mFramingRect.top - mPadding);
+        canvas.drawPath(path, mBorderPaint);
 
-        path.moveTo(mFramingRect.left - padding, mFramingRect.bottom + padding - lineLength);
-        path.lineTo(mFramingRect.left - padding, mFramingRect.bottom + padding);
-        path.lineTo(mFramingRect.left - padding + lineLength, mFramingRect.bottom + padding);
-        canvas.drawPath(path, paint);
+        path.moveTo(mFramingRect.left - mPadding, mFramingRect.bottom + mPadding - mLineLength);
+        path.lineTo(mFramingRect.left - mPadding, mFramingRect.bottom + mPadding);
+        path.lineTo(mFramingRect.left - mPadding + mLineLength, mFramingRect.bottom + mPadding);
+        canvas.drawPath(path, mBorderPaint);
 
-        path.moveTo(mFramingRect.right + padding, mFramingRect.top - padding + lineLength);
-        path.lineTo(mFramingRect.right + padding, mFramingRect.top - padding);
-        path.lineTo(mFramingRect.right + padding - lineLength, mFramingRect.top - padding);
-        canvas.drawPath(path, paint);
+        path.moveTo(mFramingRect.right + mPadding, mFramingRect.top - mPadding + mLineLength);
+        path.lineTo(mFramingRect.right + mPadding, mFramingRect.top - mPadding);
+        path.lineTo(mFramingRect.right + mPadding - mLineLength, mFramingRect.top - mPadding);
+        canvas.drawPath(path, mBorderPaint);
 
-        path.moveTo(mFramingRect.right + padding, mFramingRect.bottom + padding - lineLength);
-        path.lineTo(mFramingRect.right + padding, mFramingRect.bottom + padding);
-        path.lineTo(mFramingRect.right + padding - lineLength, mFramingRect.bottom + padding);
-        canvas.drawPath(path, paint);
+        path.moveTo(mFramingRect.right + mPadding, mFramingRect.bottom + mPadding - mLineLength);
+        path.lineTo(mFramingRect.right + mPadding, mFramingRect.bottom + mPadding);
+        path.lineTo(mFramingRect.right + mPadding - mLineLength, mFramingRect.bottom + mPadding);
+        canvas.drawPath(path, mBorderPaint);
 
     }
 

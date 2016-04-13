@@ -1,60 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="page_margin">16dp</dimen>
-
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
-    <dimen name="base_2">2dp</dimen>
-    <dimen name="base_3">3dp</dimen>
-    <dimen name="base_4">4dp</dimen>
-    <dimen name="base_5">5dp</dimen>
-    <dimen name="base_6">6dp</dimen>
-    <dimen name="base_7">7dp</dimen>
-    <dimen name="base_8">8dp</dimen>
-    <dimen name="base_10">10dp</dimen>
-    <dimen name="base_11">11dp</dimen>
-    <dimen name="base_12">12dp</dimen>
-    <dimen name="base_14">14dp</dimen>
-    <dimen name="base_15">15dp</dimen>
-    <dimen name="base_16">16dp</dimen>
-    <dimen name="base_17">17dp</dimen>
-    <dimen name="base_18">18dp</dimen>
-    <dimen name="base_19">19dp</dimen>
-    <dimen name="base_21">21dp</dimen>
-    <dimen name="base_22">22dp</dimen>
-    <dimen name="base_24">24dp</dimen>
-    <dimen name="base_25">25dp</dimen>
-    <dimen name="base_26">26dp</dimen>
-    <dimen name="base_27">27dp</dimen>
-    <dimen name="base_28">28dp</dimen>
-    <dimen name="base_30">30dp</dimen>
-    <dimen name="base_32">32dp</dimen>
-    <dimen name="base_36">36dp</dimen>
-    <dimen name="base_48">48dp</dimen>
-    <dimen name="base_m4">-4dp</dimen>
-    <dimen name="base_m5">-5dp</dimen>
-    <dimen name="base_m6">-6dp</dimen>
-    <dimen name="base_m7">-7dp</dimen>
-
-    <dimen name="button_side_padding">23dp</dimen>
-    <dimen name="button_min_height">44dp</dimen>
-
-    <dimen name="info_controller_height">100dp</dimen>
-
-    <dimen name="bonus_value_size">85sp</dimen>
-    <dimen name="barcode_number_size">22sp</dimen>
-    <dimen name="barcode_number_padding">8dp</dimen>
-    <dimen name="spinner_height_common">48dp</dimen>
-    <dimen name="event_bonus_value_size">40dp</dimen>
-    <dimen name="progress_bar_height">24dp</dimen>
-    <dimen name="stroke_line_width">1dp</dimen>
-
     <dimen name="viewfinder_border_width">2dp</dimen>
     <dimen name="viewfinder_border_length">24dp</dimen>
     <dimen name="viewfinder_border_padding">3dp</dimen>
-
-    <dimen name="bottom_sheet_peek">72dp</dimen>
-    <dimen name="letter_spacing">24dp</dimen>
-
 </resources>

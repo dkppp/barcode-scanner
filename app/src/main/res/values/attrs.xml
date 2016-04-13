@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="BarcodeScannerView">
-        <attr name="helpText" format="string|reference"/>
+        <attr name="maskColor" format="color|reference"/>
+        <attr name="borderLength" format="dimension|reference"/>
+        <attr name="borderWidth" format="dimension|reference"/>
+        <attr name="borderPadding" format="dimension|reference"/>
+        <attr name="borderColor" format="color|reference"/>
     </declare-styleable>
 </resources>

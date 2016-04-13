@@ -1,21 +1,16 @@
 package ru.vigroup.barcodescanner;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.RectF;
 import android.hardware.Camera;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 public abstract class BarcodeScannerView extends FrameLayout implements Camera.PreviewCallback {
     private Camera mCamera;
     private CameraPreview mPreview;
     private ViewFinderView mViewFinderView;
     private RectF mFramingRectInPreview;
-    private TextView mHelpText;
 
     public BarcodeScannerView(Context context) {
         super(context);
@@ -29,27 +24,10 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
 
     public void setupLayout(Context context, AttributeSet attrs) {
         mPreview = new CameraPreview(getContext());
-        mViewFinderView = new ViewFinderView(getContext());
+        mViewFinderView = new ViewFinderView(getContext(), attrs);
 
         addView(mPreview);
         addView(mViewFinderView);
-
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BarcodeScannerView, 0, 0);
-        String help = a.getString(R.styleable.BarcodeScannerView_helpText);
-
-        a.recycle();
-
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View helpView = inflater.inflate(R.layout.scan_help_text, this, false);
-        mHelpText = (TextView) helpView.findViewById(R.id.helpText);
-        if (help != null) {
-            setHelpText(help);
-        }
-        addView(helpView);
-    }
-
-    public void setHelpText(String help) {
-        mHelpText.setText(help);
     }
 
     public void startCamera(int cameraId) {
