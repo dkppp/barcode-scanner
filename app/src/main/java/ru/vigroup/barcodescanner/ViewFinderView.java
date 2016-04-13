@@ -56,7 +56,7 @@ public class ViewFinderView extends View {
 
             maskColor = a.getColor(R.styleable.BarcodeScannerView_maskColor, maskColor);
             borderColor = a.getColor(R.styleable.BarcodeScannerView_borderColor, borderColor);
-            borderWidth = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_borderWidth, borderWidth);
+            borderWidth = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_borderStrokeWidth, borderWidth);
             mLineLength = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_borderLength, mLineLength);
             mPadding = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_borderPadding, mPadding);
 
