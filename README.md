@@ -1,6 +1,6 @@
 # Example
 
-[![Release](https://jitpack.io/v/jitpack/maven-simple.svg)](https://jitpack.io/#dkppp/barcode-scanner)
+[![Release](https://jitpack.io/v/dkppp/barcode-scanner.svg)](https://jitpack.io/#dkppp/barcode-scanner)
 
 ```Gradle
 dependencies {
