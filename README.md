@@ -4,7 +4,7 @@
 
 ```Gradle
 dependencies {
-    compile 'com.github.dkppp:barcode-scanner:1.0.1'
+    compile 'com.github.dkppp:barcode-scanner:1.1.0'
 }
 ```
 
