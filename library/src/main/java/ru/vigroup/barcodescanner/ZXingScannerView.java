@@ -69,14 +69,14 @@ public class ZXingScannerView extends BarcodeScannerView {
     }
 
     public Collection<BarcodeFormat> getFormats() {
-        if(mFormats == null) {
+        if (mFormats == null) {
             return ALL_FORMATS;
         }
         return mFormats;
     }
 
     private void initMultiFormatReader() {
-        Map<DecodeHintType,Object> hints = new EnumMap<DecodeHintType,Object>(DecodeHintType.class);
+        Map<DecodeHintType, Object> hints = new EnumMap<DecodeHintType, Object>(DecodeHintType.class);
         hints.put(DecodeHintType.POSSIBLE_FORMATS, getFormats());
         mMultiFormatReader = new MultiFormatReader();
         mMultiFormatReader.setHints(hints);
@@ -94,7 +94,7 @@ public class ZXingScannerView extends BarcodeScannerView {
         int rotation = display.getRotation();
         switch (rotation) {
             case Surface.ROTATION_0:
-                data = rotate(90, data, width, height);
+                data = YuvUtils.rotate90(data, width, height);
                 int tmp1 = width;
                 width = height;
                 height = tmp1;
@@ -102,20 +102,21 @@ public class ZXingScannerView extends BarcodeScannerView {
             case Surface.ROTATION_90:
                 break;
             case Surface.ROTATION_180:
-                data = rotate(270, data, width, height);
+                data = YuvUtils.rotate270(data, width, height);
                 int tmp2 = width;
                 width = height;
                 height = tmp2;
                 break;
             case Surface.ROTATION_270:
-                data = rotate(180, data, width, height);
+                data = YuvUtils.rotate180(data, width, height);
                 break;
         }
+
 
         Result rawResult = null;
         PlanarYUVLuminanceSource source = buildLuminanceSource(data, width, height);
 
-        if(source != null) {
+        if (source != null) {
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
             try {
                 rawResult = mMultiFormatReader.decodeWithState(bitmap);
@@ -128,48 +129,33 @@ public class ZXingScannerView extends BarcodeScannerView {
 
         if (rawResult != null) {
             stopCamera();
-            if(mResultHandler != null) {
-                mResultHandler.handleResult(rawResult);
+            if (mResultHandler != null) {
+                final Result finalRawResult = rawResult;
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mResultHandler.handleResult(finalRawResult);
+                    }
+                });
             }
         } else {
-            camera.setOneShotPreviewCallback(this);
+            setOneShotCallback();
         }
     }
-
-    private byte[] rotate(double angle, byte[] pixels, int width, int height) {
-        final double radians = Math.toRadians(angle);
-        final double cos = Math.cos(radians);
-        final double sin = Math.sin(radians);
-        final byte[] pixels2 = new byte[pixels.length];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                final int centerx = width / 2;
-                final int centery = height / 2;
-                final int m = x - centerx;
-                final int n = y - centery;
-                final int j = ((int) (m * cos + n * sin)) + centerx;
-                final int k = ((int) (n * cos - m * sin)) + centery;
-                if (j >= 0 && j < width && k >= 0 && k < height) {
-                    pixels2[(y * width + x)] = pixels[(k * width + j)];
-                }
-            }
-        }
-        return pixels2;
-    }
-
 
     public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
         RectF rect = getFramingRectInPreview(width, height);
         if (rect == null) {
             return null;
         }
+
         // Go ahead and assume it's YUV rather than die.
         PlanarYUVLuminanceSource source = null;
 
         try {
-            source = new PlanarYUVLuminanceSource(data, width, height,(int) rect.left, (int) rect.top,
-                    (int)rect.width(),(int) rect.height(), false);
-        } catch(Exception e) {
+            source = new PlanarYUVLuminanceSource(data, width, height, (int) rect.left, (int) rect.top,
+                    (int) rect.width(), (int) rect.height(), false);
+        } catch (Exception e) {
         }
 
         return source;

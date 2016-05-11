@@ -3,10 +3,15 @@ package ru.vigroup.barcodescanner;
 import android.content.Context;
 import android.graphics.RectF;
 import android.hardware.Camera;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 public abstract class BarcodeScannerView extends FrameLayout implements Camera.PreviewCallback {
+
+    private CameraHandlerThread mThread = null;
+
     private Camera mCamera;
     private CameraPreview mPreview;
     private ViewFinderView mViewFinderView;
@@ -30,24 +35,45 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         addView(mViewFinderView);
     }
 
-    public void startCamera(int cameraId) {
-        startCamera(CameraUtils.getCameraInstance(cameraId));
+    public void startCamera() {
+        if (mThread == null) {
+            mThread = new CameraHandlerThread();
+        }
+
+        mThread.openCamera();
     }
 
-    public void startCamera(Camera camera) {
+    public void startCamera(int cameraId) {
+        if (mThread == null) {
+            mThread = new CameraHandlerThread();
+        }
+
+        mThread.openCamera(cameraId);
+    }
+
+    public void startCameraOld() {
+        startCameraOld(CameraUtils.getCameraInstance());
+    }
+
+    private void startCameraOld(int cameraId) {
+        startCameraOld(CameraUtils.getCameraInstance(cameraId));
+    }
+
+    private void startCameraOld(Camera camera) {
         mCamera = camera;
         if (mCamera != null) {
-            mViewFinderView.setupViewFinder();
-            mPreview.setCamera(mCamera, this);
-            mPreview.initCameraPreview();
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    mViewFinderView.setupViewFinder();
+                    mPreview.setCamera(mCamera, BarcodeScannerView.this);
+                    mPreview.initCameraPreview();
+                }
+            });
         }
     }
 
-    public void startCamera() {
-        startCamera(CameraUtils.getCameraInstance());
-    }
-
-    public void stopCamera() {
+    public synchronized void stopCamera() {
         if (mCamera != null) {
             mPreview.stopCameraPreview();
             mPreview.setCamera(null, null);
@@ -56,7 +82,13 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         }
     }
 
-    public boolean isStopped() {
+    public synchronized void setOneShotCallback() {
+        if (mCamera != null) {
+            mCamera.setOneShotPreviewCallback(this);
+        }
+    }
+
+    public synchronized boolean isStopped() {
         return mCamera == null;
     }
 
@@ -84,6 +116,34 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     public void setAutoFocus(boolean state) {
         if (mPreview != null) {
             mPreview.setAutoFocus(state);
+        }
+    }
+
+    private class CameraHandlerThread extends HandlerThread {
+        private Handler mHandler = null;
+
+        public CameraHandlerThread() {
+            super("CameraHandlerThread");
+            start();
+            mHandler = new Handler(getLooper());
+        }
+
+        public void openCamera() {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    startCameraOld();
+                }
+            });
+        }
+
+        public void openCamera(final int cameraId) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    startCameraOld(cameraId);
+                }
+            });
         }
     }
 }
