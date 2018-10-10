@@ -16,6 +16,7 @@ import android.view.SurfaceView;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
@@ -113,6 +114,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             try {
                 mPreviewing = true;
                 setupCameraParameters();
+                setupFocusMode();
                 mCamera.setPreviewDisplay(getHolder());
                 mCamera.setDisplayOrientation(getDisplayOrientation());
                 mCamera.setOneShotPreviewCallback(mPreviewCallback);
@@ -126,6 +128,27 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 }
             } catch (Exception e) {
                 Log.e(TAG, e.toString(), e);
+            }
+        }
+    }
+
+    private void setupFocusMode() {
+        if (mCamera != null) {
+            Camera.Parameters parameters = mCamera.getParameters();
+
+            List<String> supportedFocusModes = parameters.getSupportedFocusModes();
+
+            List<String> modes = Arrays.asList(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE,
+                    Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO,
+                    Camera.Parameters.FOCUS_MODE_MACRO,
+                    Camera.Parameters.FOCUS_MODE_AUTO);
+
+            for (String mode : modes) {
+                if (supportedFocusModes.contains(mode)) {
+                    parameters.setFocusMode(mode);
+                    mCamera.setParameters(parameters);
+                    break;
+                }
             }
         }
     }
@@ -300,7 +323,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     };
 
     private void scheduleAutoFocus() {
-        mAutoFocusHandler.postDelayed(doAutoFocus, 1000);
+        mAutoFocusHandler.postDelayed(doAutoFocus, 2000);
     }
 
 }
