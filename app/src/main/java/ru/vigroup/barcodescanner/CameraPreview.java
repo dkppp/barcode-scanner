@@ -138,10 +138,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
             List<String> supportedFocusModes = parameters.getSupportedFocusModes();
 
-            List<String> modes = Arrays.asList(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE,
-                    Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO,
-                    Camera.Parameters.FOCUS_MODE_MACRO,
-                    Camera.Parameters.FOCUS_MODE_AUTO);
+            List<String> modes = Arrays.asList(Camera.Parameters.FOCUS_MODE_AUTO,
+                    Camera.Parameters.FOCUS_MODE_MACRO
+            );
 
             for (String mode : modes) {
                 if (supportedFocusModes.contains(mode)) {
