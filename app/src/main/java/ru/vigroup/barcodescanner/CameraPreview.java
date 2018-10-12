@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -154,6 +155,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     public void safeAutoFocus() {
         try {
+            mCamera.cancelAutoFocus();
             mCamera.autoFocus(autoFocusCB);
         } catch (RuntimeException re) {
             // Horrible hack to deal with autofocus errors on Sony devices
@@ -323,6 +325,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     private void scheduleAutoFocus() {
         mAutoFocusHandler.postDelayed(doAutoFocus, 2000);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mCamera != null) {
+            mAutoFocusHandler.removeCallbacks(doAutoFocus);
+            safeAutoFocus();
+            return true;
+        }
+
+        return false;
     }
 
 }
