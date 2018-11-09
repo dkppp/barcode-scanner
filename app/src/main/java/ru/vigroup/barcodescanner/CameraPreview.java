@@ -85,6 +85,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             if (!mPreviewing && mSurfaceCreated) {
                 showCameraPreview();
             }
+            setVisibility(VISIBLE);
         }
     }
 
