@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -16,6 +17,7 @@ import android.view.SurfaceView;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
@@ -113,7 +115,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             try {
                 mPreviewing = true;
                 setupCameraParameters();
-                mCamera.setPreviewDisplay(getHolder());
+                setupFocusMode();mCamera.setPreviewDisplay(getHolder());
                 mCamera.setDisplayOrientation(getDisplayOrientation());
                 mCamera.setOneShotPreviewCallback(mPreviewCallback);
                 mCamera.startPreview();
@@ -152,7 +154,25 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             }
         }
     }
+    private void setupFocusMode() {
+        if (mCamera != null) {
+            Camera.Parameters parameters = mCamera.getParameters();
 
+            List<String> supportedFocusModes = parameters.getSupportedFocusModes();
+
+            List<String> modes = Arrays.asList(Camera.Parameters.FOCUS_MODE_AUTO,
+                    Camera.Parameters.FOCUS_MODE_MACRO
+            );
+
+            for (String mode : modes) {
+                if (supportedFocusModes.contains(mode)) {
+                    parameters.setFocusMode(mode);
+                    mCamera.setParameters(parameters);
+                    break;
+                }
+            }
+        }
+    }
     public void setupCameraParameters() {
         Camera.Size optimalSize = getOptimalPreviewSize();
         Camera.Parameters parameters = mCamera.getParameters();
@@ -300,7 +320,22 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     };
 
     private void scheduleAutoFocus() {
-        mAutoFocusHandler.postDelayed(doAutoFocus, 1000);
+        mAutoFocusHandler.postDelayed(doAutoFocus, 2000);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mCamera != null) {
+            mAutoFocusHandler.removeCallbacks(doAutoFocus);
+            if (mSurfaceCreated) { // check if surface created before using autofocus
+                safeAutoFocus();
+            } else {
+                scheduleAutoFocus(); // wait 1 sec and then do check again
+            }
+            return true;
+        }
+
+        return false;
     }
 
 }
