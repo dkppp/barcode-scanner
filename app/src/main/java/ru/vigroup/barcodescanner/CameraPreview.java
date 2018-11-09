@@ -34,10 +34,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     public CameraPreview(Context context) {
         super(context);
+        getHolder().addCallback(this);
     }
 
     public CameraPreview(Context context, AttributeSet attrs) {
         super(context, attrs);
+        getHolder().addCallback(this);
     }
 
     @Override
@@ -81,11 +83,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     public void initCameraPreview() {
         if (mCamera != null) {
-            getHolder().addCallback(this);
             if (!mPreviewing && mSurfaceCreated) {
                 showCameraPreview();
             }
-            setVisibility(VISIBLE);
         }
     }
 
