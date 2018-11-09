@@ -25,7 +25,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     private Camera mCamera;
     private Handler mAutoFocusHandler;
-    private boolean mPreviewing = true;
+    private boolean mPreviewing = false;
     private boolean mAutoFocus = true;
     private boolean mSurfaceCreated = false;
     private Camera.PreviewCallback mPreviewCallback;
@@ -91,7 +91,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         mSurfaceCreated = true;
-        showCameraPreview();
+        if (!mPreviewing) {
+            showCameraPreview();
+        }
     }
 
     @Override
@@ -331,7 +333,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public boolean onTouchEvent(MotionEvent event) {
         if (mCamera != null) {
             mAutoFocusHandler.removeCallbacks(doAutoFocus);
-            safeAutoFocus();
+            if (mSurfaceCreated) { // check if surface created before using autofocus
+                safeAutoFocus();
+            } else {
+                scheduleAutoFocus(); // wait 1 sec and then do check again
+            }
             return true;
         }
 
