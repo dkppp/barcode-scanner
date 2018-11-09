@@ -82,7 +82,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void initCameraPreview() {
         if (mCamera != null) {
             getHolder().addCallback(this);
-            if (!mPreviewing) {
+            if (!mPreviewing && mSurfaceCreated) {
                 showCameraPreview();
             }
         }
@@ -113,7 +113,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void showCameraPreview() {
-        if (mCamera != null) {
+        if (mCamera != null ) {
             try {
                 mPreviewing = true;
                 setupCameraParameters();
