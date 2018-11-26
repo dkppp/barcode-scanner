@@ -3,6 +3,8 @@ package ru.vigroup.barcodescanner;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.hardware.Camera;
 import android.hardware.SensorManager;
 import android.os.Handler;
@@ -17,6 +19,7 @@ import android.view.SurfaceView;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +34,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private Camera.PreviewCallback mPreviewCallback;
     private int mLastRotation;
     private OrientationEventListener mOrientationEventListener;
+    private RectF framingRectInPreview;
 
     public CameraPreview(Context context) {
         super(context);
@@ -81,6 +85,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mAutoFocusHandler = new Handler();
     }
 
+    public void setFramingRect(RectF framingRectInPreview) {
+        this.framingRectInPreview = framingRectInPreview;
+    }
+
     public void initCameraPreview() {
         if (mCamera != null) {
             if (!mPreviewing && mSurfaceCreated) {
@@ -114,7 +122,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void showCameraPreview() {
-        if (mCamera != null ) {
+        if (mCamera != null) {
             try {
                 mPreviewing = true;
                 setupCameraParameters();
@@ -153,6 +161,42 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     break;
                 }
             }
+
+            float x = framingRectInPreview.width() / 2;
+            float y = framingRectInPreview.height() / 2;
+            Rect touchRect = new Rect(
+                    (int) (x - 100),
+                    (int) (y - 100),
+                    (int) (x + 100),
+                    (int) (y + 100));
+
+            final Rect targetFocusRect = new Rect(
+                    touchRect.left * 2000 / this.getWidth() - 1000,
+                    touchRect.top * 2000 / this.getHeight() - 1000,
+                    touchRect.right * 2000 / this.getWidth() - 1000,
+                    touchRect.bottom * 2000 / this.getHeight() - 1000);
+            setFocusArea(targetFocusRect);
+        }
+    }
+
+    /**
+     * Called from PreviewSurfaceView to set touch focus.
+     *
+     * @param - Rect - new area for auto focus
+     */
+    public void setFocusArea(final Rect focusRect) {
+        try {
+            List<Camera.Area> focusList = new ArrayList<Camera.Area>();
+            Camera.Area focusArea = new Camera.Area(focusRect, 1000);
+            focusList.add(focusArea);
+
+            Camera.Parameters param = mCamera.getParameters();
+            param.setFocusAreas(focusList);
+            param.setMeteringAreas(focusList);
+            mCamera.setParameters(param);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i(TAG, "Unable to autofocus");
         }
     }
 
@@ -229,10 +273,18 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         int rotation = display.getRotation();
         int degrees = 0;
         switch (rotation) {
-            case Surface.ROTATION_0: degrees = 0; break;
-            case Surface.ROTATION_90: degrees = 90; break;
-            case Surface.ROTATION_180: degrees = 180; break;
-            case Surface.ROTATION_270: degrees = 270; break;
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
         }
 
         int result;
@@ -246,7 +298,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     private Camera.Size getOptimalPreviewSize() {
-        if(mCamera == null) {
+        if (mCamera == null) {
             return null;
         }
 
