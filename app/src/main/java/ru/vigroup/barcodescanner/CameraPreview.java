@@ -209,7 +209,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Camera.Parameters parameters = mCamera.getParameters();
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);
         mCamera.setParameters(parameters);
-        adjustViewSize(optimalSize);
+//        adjustViewSize(optimalSize);
     }
 
     private void adjustViewSize(Camera.Size cameraSize) {
