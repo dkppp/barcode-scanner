@@ -6,7 +6,8 @@ import android.hardware.Camera;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-public abstract class BarcodeScannerView extends FrameLayout implements Camera.PreviewCallback {
+public abstract class BarcodeScannerView extends FrameLayout implements Camera.PreviewCallback, ViewFinderView.FramingRectChangeListener {
+
     private Camera mCamera;
     private CameraPreview mPreview;
     private ViewFinderView mViewFinderView;
@@ -25,6 +26,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     public void setupLayout(Context context, AttributeSet attrs) {
         mPreview = new CameraPreview(getContext());
         mViewFinderView = new ViewFinderView(getContext(), attrs);
+        mViewFinderView.setFramingRectChangeListener(this);
 
         addView(mPreview);
         addView(mViewFinderView);
@@ -37,8 +39,6 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     public void startCamera(Camera camera) {
         mCamera = camera;
         if (mCamera != null) {
-            mViewFinderView.setupViewFinder();
-            mPreview.setFramingRect(mViewFinderView.getFramingRect());
             mPreview.setCamera(mCamera, this);
             mPreview.initCameraPreview();
         }
@@ -87,4 +87,13 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
             mPreview.setAutoFocus(state);
         }
     }
+
+    @Override
+    public void onRectChanged(RectF rect) {
+        mFramingRectInPreview = null;
+        if (mPreview != null) {
+            mPreview.setFramingRect(rect);
+        }
+    }
+
 }

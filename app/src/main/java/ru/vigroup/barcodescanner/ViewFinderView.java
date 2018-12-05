@@ -14,6 +14,11 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class ViewFinderView extends View {
+
+    public interface FramingRectChangeListener {
+        void onRectChanged(RectF rect);
+    }
+
     private static final String TAG = "ViewFinderView";
 
     private RectF mFramingRect;
@@ -34,6 +39,8 @@ public class ViewFinderView extends View {
     private Paint mBorderPaint;
     private int mLineLength;
     private int mPadding;
+
+    private FramingRectChangeListener framingRectChangeListener;
 
     public ViewFinderView(Context context) {
         this(context, null);
@@ -77,9 +84,8 @@ public class ViewFinderView extends View {
         mBorderPaint.setAntiAlias(true);
     }
 
-    public void setupViewFinder() {
-        updateFramingRect();
-        invalidate();
+    public void setFramingRectChangeListener(FramingRectChangeListener framingRectChangeListener) {
+        this.framingRectChangeListener = framingRectChangeListener;
     }
 
     public RectF getFramingRect() {
@@ -91,14 +97,6 @@ public class ViewFinderView extends View {
         if (mFramingRect == null) {
             return;
         }
-
-        /*
-        Paint paint = new Paint();
-        Resources resources = getResources();
-        paint.setColor(resources.getColor(R.color.transparent));
-        paint.setAntiAlias(true);
-        canvas.drawRoundRect(mFramingRect, 4f, 4f, paint);
-        */
 
         drawViewFinderMask(canvas);
         drawViewFinderBorder(canvas);
@@ -135,7 +133,6 @@ public class ViewFinderView extends View {
         path.lineTo(mFramingRect.right + mPadding, mFramingRect.bottom + mPadding);
         path.lineTo(mFramingRect.right + mPadding - mLineLength, mFramingRect.bottom + mPadding);
         canvas.drawPath(path, mBorderPaint);
-
     }
 
     @Override
@@ -143,7 +140,7 @@ public class ViewFinderView extends View {
         updateFramingRect();
     }
 
-    public synchronized void updateFramingRect() {
+    private synchronized void updateFramingRect() {
         Point viewResolution = new Point(getWidth(), getHeight());
 
         int width;
@@ -163,6 +160,10 @@ public class ViewFinderView extends View {
         int topOffset = landscape ? (viewResolution.y - height) / 8 : leftOffset;
 
         mFramingRect = new RectF(leftOffset, topOffset, leftOffset + width, topOffset + height);
+
+        if (framingRectChangeListener != null) {
+            framingRectChangeListener.onRectChanged(mFramingRect);
+        }
     }
 
     private static int findDesiredDimensionInRange(float ratio, int resolution, int hardMin, int hardMax) {
