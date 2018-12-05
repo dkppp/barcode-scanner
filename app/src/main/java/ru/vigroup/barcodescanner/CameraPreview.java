@@ -19,11 +19,15 @@ import android.view.SurfaceView;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+
+    private static final float FOCUS_AREA_SIZE = 75f;
+    private static final float FOCUS_AREA_FULL_SIZE = 2000f;
+
     private static final String TAG = "CameraPreview";
 
     private Camera mCamera;
@@ -35,6 +39,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private int mLastRotation;
     private OrientationEventListener mOrientationEventListener;
     private RectF framingRectInPreview;
+
+    private float focusKoefW;
+    private float focusKoefH;
 
     public CameraPreview(Context context) {
         super(context);
@@ -106,13 +113,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
         if (surfaceHolder.getSurface() == null) {
             return;
         }
         if (mPreviewing) {
             requestLayout();
         }
+        initFocusKoefs(width, height);
     }
 
     @Override
@@ -162,21 +170,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 }
             }
 
-            float x = framingRectInPreview.width() / 2;
-            float y = framingRectInPreview.height() / 2;
-            Rect touchRect = new Rect(
-                    (int) (x - 100),
-                    (int) (y - 100),
-                    (int) (x + 100),
-                    (int) (y + 100));
-
-            final Rect targetFocusRect = new Rect(
-                    touchRect.left * 2000 / this.getWidth() - 1000,
-                    touchRect.top * 2000 / this.getHeight() - 1000,
-                    touchRect.right * 2000 / this.getWidth() - 1000,
-                    touchRect.bottom * 2000 / this.getHeight() - 1000);
-            setFocusArea(targetFocusRect);
+            setFocusArea(framingRectInPreview.centerX(), framingRectInPreview.centerX());
         }
+    }
+
+    private void initFocusKoefs(float width, float height) {
+        focusKoefW = width / FOCUS_AREA_FULL_SIZE;
+        focusKoefH = height / FOCUS_AREA_FULL_SIZE;
     }
 
     /**
@@ -184,20 +184,77 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
      *
      * @param - Rect - new area for auto focus
      */
-    public void setFocusArea(final Rect focusRect) {
+    public void setFocusArea(float x, float y) {
         try {
-            List<Camera.Area> focusList = new ArrayList<Camera.Area>();
-            Camera.Area focusArea = new Camera.Area(focusRect, 1000);
-            focusList.add(focusArea);
-
             Camera.Parameters param = mCamera.getParameters();
-            param.setFocusAreas(focusList);
-            param.setMeteringAreas(focusList);
+            int maxFocusAreas = param.getMaxNumFocusAreas();
+
+            if (maxFocusAreas > 0) {
+                Rect rectFocus = calculateTapArea(x, y, 1f);
+                Camera.Area area = new Camera.Area(convert(rectFocus), 100);
+                param.setFocusAreas(Collections.singletonList(area));
+            }
+
+            maxFocusAreas = param.getMaxNumMeteringAreas();
+
+            if (maxFocusAreas > 0) {
+                Rect rectMetering = calculateTapArea(x, y, 1.5f);
+                Camera.Area area = new Camera.Area(convert(rectMetering), 100);
+                param.setMeteringAreas(Collections.singletonList(area));
+            }
             mCamera.setParameters(param);
         } catch (Exception e) {
             e.printStackTrace();
             Log.i(TAG, "Unable to autofocus");
         }
+    }
+
+    /**
+     * Convert touch position x:y to {@link android.hardware.Camera.Area} position -1000:-1000 to 1000:1000.
+     */
+    private Rect calculateTapArea(float x, float y, float coefficient) {
+        int areaSize = Float.valueOf(FOCUS_AREA_SIZE * coefficient).intValue();
+        int left = clamp((int) x - areaSize / 2, 0, getWidth() - areaSize);
+        int top = clamp((int) y - areaSize / 2, 0, getHeight() - areaSize);
+        RectF rect = new RectF(left, top, left + areaSize, top + areaSize);
+        return round(rect);
+    }
+
+    private Rect round(RectF rect) {
+        return new Rect(Math.round(rect.left), Math.round(rect.top), Math.round(rect.right), Math.round(rect.bottom));
+    }
+
+    private Rect convert(Rect rect) {
+        Rect result = new Rect();
+        result.top = normalize(rect.top / focusKoefH - 1000);
+        result.left = normalize(rect.left / focusKoefW - 1000);
+        result.right = normalize(rect.right / focusKoefW - 1000);
+        result.bottom = normalize(rect.bottom / focusKoefH - 1000);
+        return result;
+    }
+
+    private int normalize(float value) {
+        if (value > 1000) {
+            return 1000;
+        }
+
+        if (value < -1000) {
+            return -1000;
+        }
+
+        return Math.round(value);
+    }
+
+    private int clamp(int x, int min, int max) {
+        if (x > max) {
+            return max;
+        }
+
+        if (x < min) {
+            return min;
+        }
+
+        return x;
     }
 
     public void safeAutoFocus() {
