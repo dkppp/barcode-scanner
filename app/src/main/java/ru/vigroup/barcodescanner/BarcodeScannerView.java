@@ -1,6 +1,7 @@
 package ru.vigroup.barcodescanner;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.Camera;
 import android.util.AttributeSet;
@@ -63,23 +64,26 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
 
     public synchronized RectF getFramingRectInPreview(int previewWidth, int previewHeight) {
         if (mFramingRectInPreview == null) {
-            RectF framingRect = mViewFinderView.getFramingRect();
-            int viewFinderViewWidth = mPreview.getWidth();
-            int viewFinderViewHeight = mPreview.getHeight();
-            if (framingRect == null || viewFinderViewWidth == 0 || viewFinderViewHeight == 0) {
-                return null;
-            }
-
-            RectF rect = new RectF();
-
-            rect.left = framingRect.left * previewWidth / viewFinderViewWidth;
-            rect.top = framingRect.top * previewHeight / viewFinderViewHeight;
-            rect.right = framingRect.right * previewWidth / viewFinderViewWidth;
-            rect.bottom = framingRect.bottom * previewHeight / viewFinderViewHeight;
-
-            mFramingRectInPreview = rect;
+            mFramingRectInPreview = getFramingRect(previewWidth, previewHeight);
         }
         return mFramingRectInPreview;
+    }
+
+    private RectF getFramingRect(int previewWidth, int previewHeight) {
+        RectF framingRect = mViewFinderView.getFramingRect();
+        int viewFinderViewWidth = mPreview.getWidth();
+        int viewFinderViewHeight = mPreview.getHeight();
+        if (framingRect == null || viewFinderViewWidth == 0 || viewFinderViewHeight == 0) {
+            return null;
+        }
+
+        RectF rect = new RectF();
+
+        rect.left = framingRect.left * previewWidth / viewFinderViewWidth;
+        rect.top = framingRect.top * previewHeight / viewFinderViewHeight;
+        rect.right = framingRect.right * previewWidth / viewFinderViewWidth;
+        rect.bottom = framingRect.bottom * previewHeight / viewFinderViewHeight;
+        return rect;
     }
 
     public void setAutoFocus(boolean state) {
@@ -92,7 +96,8 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     public void onRectChanged(RectF rect) {
         mFramingRectInPreview = null;
         if (mPreview != null) {
-            mPreview.setFramingRect(rect);
+            RectF rectF = getFramingRectInPreview(2000, 2000);
+            mPreview.setupFocusArea(new Rect(((int) rect.left), ((int) rectF.top), ((int) rect.right), ((int) rect.bottom)));
         }
     }
 

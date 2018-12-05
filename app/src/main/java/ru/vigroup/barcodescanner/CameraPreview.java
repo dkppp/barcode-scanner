@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.hardware.Camera;
 import android.hardware.SensorManager;
 import android.os.Handler;
@@ -34,7 +33,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private Camera.PreviewCallback mPreviewCallback;
     private int mLastRotation;
     private OrientationEventListener mOrientationEventListener;
-    private RectF framingRectInPreview;
 
     public CameraPreview(Context context) {
         super(context);
@@ -83,11 +81,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mCamera = camera;
         mPreviewCallback = previewCallback;
         mAutoFocusHandler = new Handler();
-    }
-
-    public void setFramingRect(RectF framingRectInPreview) {
-        this.framingRectInPreview = framingRectInPreview;
-        setupFocusMode();
     }
 
     public void initCameraPreview() {
@@ -162,39 +155,24 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     break;
                 }
             }
-
-            if (framingRectInPreview != null) {
-                float x = framingRectInPreview.centerX();
-                float y = framingRectInPreview.centerY();
-                Rect touchRect = new Rect(
-                        (int) (x - 100),
-                        (int) (y - 100),
-                        (int) (x + 100),
-                        (int) (y + 100));
-
-                final Rect targetFocusRect = new Rect(
-                        touchRect.left * 2000 / this.getWidth() - 1000,
-                        touchRect.top * 2000 / this.getHeight() - 1000,
-                        touchRect.right * 2000 / this.getWidth() - 1000,
-                        touchRect.bottom * 2000 / this.getHeight() - 1000);
-                setFocusArea(targetFocusRect);
-            }
         }
     }
 
-    public void setFocusArea(final Rect focusRect) {
-        try {
-            List<Camera.Area> focusList = new ArrayList<>();
-            Camera.Area focusArea = new Camera.Area(focusRect, 1000);
-            focusList.add(focusArea);
+    public void setupFocusArea(final Rect focusRect) {
+        if (mCamera != null) {
+            try {
+                List<Camera.Area> focusList = new ArrayList<>();
+                Camera.Area focusArea = new Camera.Area(focusRect, 1000);
+                focusList.add(focusArea);
 
-            Camera.Parameters param = mCamera.getParameters();
-            param.setFocusAreas(focusList);
-            param.setMeteringAreas(focusList);
-            mCamera.setParameters(param);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i(TAG, "Unable to autofocus");
+                Camera.Parameters param = mCamera.getParameters();
+                param.setFocusAreas(focusList);
+                param.setMeteringAreas(focusList);
+                mCamera.setParameters(param);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.i(TAG, "Unable to autofocus");
+            }
         }
     }
 
