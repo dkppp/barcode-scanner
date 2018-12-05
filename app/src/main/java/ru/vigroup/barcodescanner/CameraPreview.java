@@ -25,8 +25,8 @@ import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 
-    private static final float FOCUS_AREA_SIZE = 50f;
-    private static final float FOCUS_AREA_FULL_SIZE = 1000f;
+    private static final float FOCUS_AREA_SIZE = 75f;
+    private static final float FOCUS_AREA_FULL_SIZE = 2000f;
 
     private static final String TAG = "CameraPreview";
 
