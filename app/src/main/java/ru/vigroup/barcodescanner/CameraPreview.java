@@ -25,8 +25,8 @@ import java.util.List;
 
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 
-    private static final float FOCUS_AREA_SIZE = 75f;
-    private static final float FOCUS_AREA_FULL_SIZE = 2000f;
+    private static final float FOCUS_AREA_SIZE = 50f;
+    private static final float FOCUS_AREA_FULL_SIZE = 1000f;
 
     private static final String TAG = "CameraPreview";
 
@@ -187,21 +187,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void setFocusArea(float x, float y) {
         try {
             Camera.Parameters param = mCamera.getParameters();
-            int maxFocusAreas = param.getMaxNumFocusAreas();
 
+            int maxFocusAreas = param.getMaxNumFocusAreas();
             if (maxFocusAreas > 0) {
                 Rect rectFocus = calculateTapArea(x, y, 1f);
                 Camera.Area area = new Camera.Area(convert(rectFocus), 100);
                 param.setFocusAreas(Collections.singletonList(area));
             }
 
-            maxFocusAreas = param.getMaxNumMeteringAreas();
-
-            if (maxFocusAreas > 0) {
+            int maxNumMeteringAreas = param.getMaxNumMeteringAreas();
+            if (maxNumMeteringAreas > 0) {
                 Rect rectMetering = calculateTapArea(x, y, 1.5f);
                 Camera.Area area = new Camera.Area(convert(rectMetering), 100);
                 param.setMeteringAreas(Collections.singletonList(area));
             }
+
             mCamera.setParameters(param);
         } catch (Exception e) {
             e.printStackTrace();

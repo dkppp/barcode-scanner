@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/barcode-scanner.iml" filepath="$PROJECT_DIR$/.idea/barcode-scanner.iml" />
-      <module fileurl="file://$PROJECT_DIR$/barcode-scanner-library.iml" filepath="$PROJECT_DIR$/barcode-scanner-library.iml" />
     </modules>
   </component>
 </project>
