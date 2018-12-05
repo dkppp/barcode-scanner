@@ -69,14 +69,14 @@ public class ZXingScannerView extends BarcodeScannerView {
     }
 
     public Collection<BarcodeFormat> getFormats() {
-        if(mFormats == null) {
+        if (mFormats == null) {
             return ALL_FORMATS;
         }
         return mFormats;
     }
 
     private void initMultiFormatReader() {
-        Map<DecodeHintType,Object> hints = new EnumMap<DecodeHintType,Object>(DecodeHintType.class);
+        Map<DecodeHintType, Object> hints = new EnumMap<DecodeHintType, Object>(DecodeHintType.class);
         hints.put(DecodeHintType.POSSIBLE_FORMATS, getFormats());
         mMultiFormatReader = new MultiFormatReader();
         mMultiFormatReader.setHints(hints);
@@ -84,8 +84,14 @@ public class ZXingScannerView extends BarcodeScannerView {
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        Camera.Parameters parameters = camera.getParameters();
-        Camera.Size size = parameters.getPreviewSize();
+        Camera.Size size;
+        try {
+            Camera.Parameters parameters = camera.getParameters();
+            size = parameters.getPreviewSize();
+        } catch (RuntimeException e) {
+            return;
+        }
+
         int width = size.width;
         int height = size.height;
 
@@ -115,7 +121,7 @@ public class ZXingScannerView extends BarcodeScannerView {
         Result rawResult = null;
         PlanarYUVLuminanceSource source = buildLuminanceSource(data, width, height);
 
-        if(source != null) {
+        if (source != null) {
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
             try {
                 rawResult = mMultiFormatReader.decodeWithState(bitmap);
@@ -128,7 +134,7 @@ public class ZXingScannerView extends BarcodeScannerView {
 
         if (rawResult != null) {
             stopCamera();
-            if(mResultHandler != null) {
+            if (mResultHandler != null) {
                 mResultHandler.handleResult(rawResult);
             }
         } else {
@@ -167,9 +173,9 @@ public class ZXingScannerView extends BarcodeScannerView {
         PlanarYUVLuminanceSource source = null;
 
         try {
-            source = new PlanarYUVLuminanceSource(data, width, height,(int) rect.left, (int) rect.top,
-                    (int)rect.width(),(int) rect.height(), false);
-        } catch(Exception e) {
+            source = new PlanarYUVLuminanceSource(data, width, height, (int) rect.left, (int) rect.top,
+                    (int) rect.width(), (int) rect.height(), false);
+        } catch (Exception e) {
         }
 
         return source;
