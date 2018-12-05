@@ -366,13 +366,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (mCamera != null) {
-            mAutoFocusHandler.removeCallbacks(doAutoFocus);
-            if (mSurfaceCreated) { // check if surface created before using autofocus
-                safeAutoFocus();
-            } else {
-                scheduleAutoFocus(); // wait 1 sec and then do check again
-            }
-
             float x = event.getX();
             float y = event.getY();
 
@@ -390,6 +383,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                     touchRect.bottom * 2000/this.getHeight() - 1000);
 
             setupFocusArea(targetFocusRect);
+
+            mAutoFocusHandler.removeCallbacks(doAutoFocus);
+            if (mSurfaceCreated) { // check if surface created before using autofocus
+                safeAutoFocus();
+            } else {
+                scheduleAutoFocus(); // wait 1 sec and then do check again
+            }
 
             return true;
         }
