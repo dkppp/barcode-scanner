@@ -1,7 +1,6 @@
 package ru.vigroup.barcodescanner;
 
 import android.content.Context;
-import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.Camera;
@@ -101,28 +100,21 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         mFramingRectInPreview = null;
         if (mPreview != null) {
             RectF rectF = getFramingRectInPreview(2000, 2000);
-            float x = rectF.centerX();
-            float y = rectF.centerY();
-
-            Matrix matrix = new Matrix();
 
             WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
             int rotation = display.getRotation();
             switch (rotation) {
                 case Surface.ROTATION_0:
-                    matrix.setRotate(90, x, y);
+                    rectF = new RectF(rectF.top, rectF.width() - rectF.right, rectF.bottom, rectF.width() + rectF.left);
                     break;
                 case Surface.ROTATION_90:
                     break;
                 case Surface.ROTATION_180:
-                    matrix.setRotate(270, x, y);
                     break;
                 case Surface.ROTATION_270:
-                    matrix.setRotate(180, x, y);
                     break;
             }
-            matrix.mapRect(rectF);
 
             int left = (int) (rectF.left - 1000);
             int top = (int) (rectF.top - 1000);
