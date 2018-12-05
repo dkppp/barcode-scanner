@@ -166,8 +166,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 focusList.add(focusArea);
 
                 Camera.Parameters param = mCamera.getParameters();
-                param.setFocusAreas(focusList);
-                param.setMeteringAreas(focusList);
+                if (param.getMaxNumFocusAreas() > 0) {
+                    param.setFocusAreas(focusList);
+                }
+                if (param.getMaxNumMeteringAreas() > 0) {
+                    param.setMeteringAreas(focusList);
+                }
                 mCamera.setParameters(param);
             } catch (Exception e) {
                 e.printStackTrace();

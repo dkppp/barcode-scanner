@@ -1,10 +1,14 @@
 package ru.vigroup.barcodescanner;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.Camera;
 import android.util.AttributeSet;
+import android.view.Display;
+import android.view.Surface;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 public abstract class BarcodeScannerView extends FrameLayout implements Camera.PreviewCallback, ViewFinderView.FramingRectChangeListener {
@@ -93,10 +97,33 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     }
 
     @Override
-    public void onRectChanged(RectF rect) {
+    public void onRectChanged(RectF framingRect) {
         mFramingRectInPreview = null;
         if (mPreview != null) {
             RectF rectF = getFramingRectInPreview(2000, 2000);
+            float x = rectF.centerX();
+            float y = rectF.centerY();
+
+            WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+
+            Matrix m = new Matrix();
+            int rotation = display.getRotation();
+            switch (rotation) {
+                case Surface.ROTATION_0:
+                    m.setRotate(90, x, y);
+                    break;
+                case Surface.ROTATION_90:
+                    break;
+                case Surface.ROTATION_180:
+                    m.setRotate(270, x, y);
+                    break;
+                case Surface.ROTATION_270:
+                    m.setRotate(180, x, y);
+                    break;
+            }
+            m.mapRect(rectF);
+
             mPreview.setupFocusArea(new Rect((int)(rectF.left - 1000), (int) (rectF.top - 1000), (int) (rectF.right - 1000), (int) (rectF.bottom - 1000)));
         }
     }
