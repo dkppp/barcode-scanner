@@ -172,7 +172,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             }
 
             if (framingRectInPreview != null) {
-                setFocusArea(framingRectInPreview.centerX(), framingRectInPreview.centerY());
+                float x = framingRectInPreview.centerX();
+                float y = (framingRectInPreview.top - framingRectInPreview.bottom) / 4;
+                setFocusArea(x, y);
             }
         }
     }
