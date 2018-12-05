@@ -104,27 +104,33 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
             float x = rectF.centerX();
             float y = rectF.centerY();
 
+            Matrix matrix = new Matrix();
+
             WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
-
-            Matrix m = new Matrix();
             int rotation = display.getRotation();
             switch (rotation) {
                 case Surface.ROTATION_0:
-                    m.setRotate(90, x, y);
+                    matrix.setRotate(90, x, y);
                     break;
                 case Surface.ROTATION_90:
                     break;
                 case Surface.ROTATION_180:
-                    m.setRotate(270, x, y);
+                    matrix.setRotate(270, x, y);
                     break;
                 case Surface.ROTATION_270:
-                    m.setRotate(180, x, y);
+                    matrix.setRotate(180, x, y);
                     break;
             }
-            m.mapRect(rectF);
+            matrix.mapRect(rectF);
 
-            mPreview.setupFocusArea(new Rect((int)(rectF.left - 1000), (int) (rectF.top - 1000), (int) (rectF.right - 1000), (int) (rectF.bottom - 1000)));
+            int left = (int) (rectF.left - 1000);
+            int top = (int) (rectF.top - 1000);
+            int right = (int) (rectF.right - 1000);
+            int bottom = (int) (rectF.bottom - 1000);
+
+            mPreview.setupFocusArea(new Rect(left, top, right, bottom));
+
         }
     }
 
