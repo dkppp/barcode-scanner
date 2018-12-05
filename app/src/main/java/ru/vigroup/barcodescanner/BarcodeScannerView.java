@@ -106,7 +106,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
             int rotation = display.getRotation();
             switch (rotation) {
                 case Surface.ROTATION_0:
-                    rectF = new RectF(rectF.top, rectF.width() - rectF.right, rectF.bottom, rectF.width() + rectF.left);
+                    rectF = new RectF(rectF.top, rectF.right - rectF.width(), rectF.bottom, rectF.width() + rectF.left);
                     break;
                 case Surface.ROTATION_90:
                     break;
