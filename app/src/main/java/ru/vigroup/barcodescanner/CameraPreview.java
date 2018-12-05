@@ -172,6 +172,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 if (param.getMaxNumMeteringAreas() > 0) {
                     param.setMeteringAreas(focusList);
                 }
+
                 mCamera.setParameters(param);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -209,7 +210,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         Camera.Parameters parameters = mCamera.getParameters();
         parameters.setPreviewSize(optimalSize.width, optimalSize.height);
         mCamera.setParameters(parameters);
-//        adjustViewSize(optimalSize);
+        adjustViewSize(optimalSize);
     }
 
     private void adjustViewSize(Camera.Size cameraSize) {
@@ -371,6 +372,25 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             } else {
                 scheduleAutoFocus(); // wait 1 sec and then do check again
             }
+
+            float x = event.getX();
+            float y = event.getY();
+
+            Rect touchRect = new Rect(
+                    (int)(x - 100),
+                    (int)(y - 100),
+                    (int)(x + 100),
+                    (int)(y + 100));
+
+
+            final Rect targetFocusRect = new Rect(
+                    touchRect.left * 2000/this.getWidth() - 1000,
+                    touchRect.top * 2000/this.getHeight() - 1000,
+                    touchRect.right * 2000/this.getWidth() - 1000,
+                    touchRect.bottom * 2000/this.getHeight() - 1000);
+
+            setupFocusArea(targetFocusRect);
+
             return true;
         }
 

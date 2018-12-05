@@ -1,7 +1,6 @@
 package ru.vigroup.barcodescanner;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.Camera;
 import android.util.AttributeSet;
@@ -97,7 +96,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         mFramingRectInPreview = null;
         if (mPreview != null) {
             RectF rectF = getFramingRectInPreview(2000, 2000);
-            mPreview.setupFocusArea(new Rect((int)(rectF.left - 1000), (int) (rectF.top - 1000), (int) (rectF.right - 1000), (int) (rectF.bottom - 1000)));
+//            mPreview.setupFocusArea(new Rect((int)(rectF.left - 1000), (int) (rectF.top - 1000), (int) (rectF.right - 1000), (int) (rectF.bottom - 1000)));
         }
     }
 
