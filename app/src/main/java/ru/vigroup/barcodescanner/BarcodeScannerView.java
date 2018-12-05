@@ -121,7 +121,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
             int right = (int) (rectF.right - 1000);
             int bottom = (int) (rectF.bottom - 1000);
 
-            mPreview.setupFocusArea(new Rect(left, top, right, bottom));
+            mPreview.setupFocusArea(new Rect(-1000, -1000, 1000, 0));
 
         }
     }
