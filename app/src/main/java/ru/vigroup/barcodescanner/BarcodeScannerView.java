@@ -101,7 +101,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         mFramingRectInPreview = null;
         if (mPreview != null) {
             RectF focusRect = new RectF(framingRect);
-            focusRect.inset(framingRect.width() / 2, framingRect.height() / 2);
+            focusRect.inset(framingRect.width() / 4, framingRect.height() / 4);
             Rect focusArea = new Rect();
 
             Matrix matrix = new Matrix();
