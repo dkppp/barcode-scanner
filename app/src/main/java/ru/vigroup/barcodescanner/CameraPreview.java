@@ -366,24 +366,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (mCamera != null) {
-            float x = event.getX();
-            float y = event.getY();
-
-            Rect touchRect = new Rect(
-                    (int)(x - 100),
-                    (int)(y - 100),
-                    (int)(x + 100),
-                    (int)(y + 100));
-
-
-            final Rect targetFocusRect = new Rect(
-                    touchRect.left * 2000/this.getWidth() - 1000,
-                    touchRect.top * 2000/this.getHeight() - 1000,
-                    touchRect.right * 2000/this.getWidth() - 1000,
-                    touchRect.bottom * 2000/this.getHeight() - 1000);
-
-            setupFocusArea(targetFocusRect);
-
             mAutoFocusHandler.removeCallbacks(doAutoFocus);
             if (mSurfaceCreated) { // check if surface created before using autofocus
                 safeAutoFocus();
