@@ -123,7 +123,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         // UI coordinates range from (0, 0) to (width, height).
         matrix.postScale(viewWidth / 2000f, viewHeight / 2000f);
         matrix.postTranslate(viewWidth / 2f, viewHeight / 2f);
-        matrix.invert(dst);
+        dst.set(matrix);
     }
 
     public static void rectFToRect(RectF rectF, Rect rect) {
