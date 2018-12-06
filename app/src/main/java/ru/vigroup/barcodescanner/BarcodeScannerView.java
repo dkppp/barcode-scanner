@@ -100,13 +100,14 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     public void onRectChanged(RectF framingRect) {
         mFramingRectInPreview = null;
         if (mPreview != null) {
-            RectF framingArea = new RectF(framingRect);
+            RectF focusRect = new RectF(framingRect);
+            focusRect.inset(framingRect.width() / 2, framingRect.height() / 2);
             Rect focusArea = new Rect();
 
             Matrix matrix = new Matrix();
             prepareMatrix(matrix, false, getDisplayOrientation(), mPreview.getWidth(), mPreview.getHeight());
-            matrix.mapRect(framingArea);
-            rectFToRect(framingArea, focusArea);
+            matrix.mapRect(focusRect);
+            rectFToRect(focusRect, focusArea);
 
             mPreview.setupFocusArea(focusArea);
         }
@@ -122,12 +123,11 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         // Camera driver coordinates range from (-1000, -1000) to (1000, 1000).
         // UI coordinates range from (0, 0) to (width, height).
         matrix.postScale(viewWidth / 2000f, viewHeight / 2000f);
-        matrix.postTranslate(-1000, -1000);
-//        matrix.invert(dst);
-        dst.set(matrix);
+        matrix.postTranslate(viewWidth / 2f, viewHeight / 2f);
+        matrix.invert(dst);
     }
 
-    public static void rectFToRect(RectF rectF, Rect rect) {
+    public void rectFToRect(RectF rectF, Rect rect) {
         rect.left = Math.round(rectF.left);
         rect.top = Math.round(rectF.top);
         rect.right = Math.round(rectF.right);
