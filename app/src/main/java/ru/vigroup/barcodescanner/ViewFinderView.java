@@ -21,7 +21,7 @@ public class ViewFinderView extends View {
 
     private static final String TAG = "ViewFinderView";
 
-    private RectF mFramingRect;
+    private RectF mFramingRect = null;
 
     private static final int MIN_FRAME_WIDTH = 240;
     private static final int MIN_FRAME_HEIGHT = 240;

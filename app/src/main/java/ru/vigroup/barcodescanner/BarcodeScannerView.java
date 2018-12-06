@@ -46,6 +46,11 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         if (mCamera != null) {
             mPreview.setCamera(mCamera, this);
             mPreview.initCameraPreview();
+
+            RectF framingRect = mViewFinderView.getFramingRect();
+            if (framingRect != null) {
+                setFocusArea(framingRect);
+            }
         }
     }
 
@@ -99,6 +104,10 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     @Override
     public void onRectChanged(RectF framingRect) {
         mFramingRectInPreview = null;
+        setFocusArea(framingRect);
+    }
+
+    private void setFocusArea(RectF framingRect) {
         if (mPreview != null) {
             RectF focusRect = new RectF(framingRect);
             focusRect.inset(framingRect.width() / 4, framingRect.height() / 4);
