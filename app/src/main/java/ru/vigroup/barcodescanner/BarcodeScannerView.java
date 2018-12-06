@@ -122,7 +122,8 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         // Camera driver coordinates range from (-1000, -1000) to (1000, 1000).
         // UI coordinates range from (0, 0) to (width, height).
         matrix.postScale(viewWidth / 2000f, viewHeight / 2000f);
-        matrix.postTranslate(viewWidth / 2f, viewHeight / 2f);
+        matrix.postTranslate(-1000, -1000);
+//        matrix.invert(dst);
         dst.set(matrix);
     }
 
